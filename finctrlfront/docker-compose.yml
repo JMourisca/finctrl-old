@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+    finctrl_front:
+        container_name: finctrl_front
+        build:
+            context: .
+            target: dev
+        command: tail -f /dev/null #yarn dev
+        volumes:
+            - .:/code
+        ports:
+            - "3000:3000"

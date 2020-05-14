@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+    finctrl_db:
+        container_name: finctrl_db
+        image: postgres
+        environment:
+            - POSTGRES_DB=postgres
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        ports:
+            - "5433:5432"
+        volumes:
+            - ./db_data/postgres/data:/var/lib/postgresql/data
+
+    finctrl_back:
+        container_name: finctrl_back
+        build:
+            context: ./finctrl
+            target: dev
+            dockerfile: Dockerfile
+        command: python manage.py runserver 0.0.0.0:8000
+        volumes:
+            - ./finctrl:/code
+        ports:
+            - "8000:8000"
+        depends_on:
+            - finctrl_db
+
+    finctrl_front:
+        container_name: finctrl_front
+        build:
+            context: ./finctrlfront
+            target: dev
+            dockerfile: Dockerfile
+        command: tail -f /dev/null # yarn dev
+        volumes:
+            - ./finctrlfront:/code
+        ports:
+            - "3000:3000"
+        depends_on:
+            - finctrl_back
