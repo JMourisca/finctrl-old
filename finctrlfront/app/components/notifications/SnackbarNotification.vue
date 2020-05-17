@@ -3,14 +3,12 @@
         v-model="show"
         :right="true"
         :timeout="6000"
-        :top="true"
-    >
+        :top="true">
         {{ $store.state.snackbarText }}
         <v-btn
             color="pink"
             text
-            @click="$store.commit('setSnackbar', '')"
-        >
+            @click="$store.commit('setSnackbar', '')">
             Close
         </v-btn>
     </v-snackbar>

@@ -25,30 +25,34 @@
                                 <v-btn color="primary" dark class="mb-2" v-on="on">New Item</v-btn>
                             </template>
                             <v-card>
-                                <v-card-title>
-                                    <span class="headline">{{ formTitle }}</span>
-                                </v-card-title>
-                                <v-card-text>
-                                    <v-container>
-                                        <v-row>
-                                            <v-col cols="12" sm="12" md="12">
-                                                <v-text-field v-model="editedItem.name"
-                                                              hint="Master 1234 / Paypal. Do not add the complete credit card number."
-                                                              label="Name"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="12" md="12">
-                                                <v-textarea v-model="editedItem.description"
-                                                            label="Description"></v-textarea>
-                                            </v-col>
-                                        </v-row>
-                                    </v-container>
-                                </v-card-text>
+                                <v-form @submit.prevent="save" ref="form" v-model="valid" lazy-validation id="pt-form">
+                                    <v-card-title>
+                                        <span class="headline">{{ formTitle }}</span>
+                                    </v-card-title>
+                                    <v-card-text>
+                                        <v-container>
+                                            <v-row>
+                                                <v-col cols="12" sm="12" md="12">
+                                                    <v-text-field v-model="editedItem.name"
+                                                                  hint="Master 1234 / Paypal. Do not add the complete credit card number."
+                                                                  :rules="[v => !!v || 'Name is required']"
+                                                                  label="Name"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12" sm="12" md="12">
+                                                    <v-textarea v-model="editedItem.description"
+                                                                rows="2"
+                                                                label="Description"></v-textarea>
+                                                </v-col>
+                                            </v-row>
+                                        </v-container>
+                                    </v-card-text>
 
-                                <v-card-actions>
-                                    <v-spacer></v-spacer>
-                                    <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                                    <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-                                </v-card-actions>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="primary" text @click="close">Cancel</v-btn>
+                                        <v-btn color="primary" text type="submit" form="pt-form">Save</v-btn>
+                                    </v-card-actions>
+                                </v-form>
                             </v-card>
                         </v-dialog>
                     </v-toolbar>
@@ -68,18 +72,18 @@
                         mdi-delete
                     </v-icon>
                 </template>
-                <template v-slot:no-data>
-                    <v-btn color="primary" @click="initialize">Reset</v-btn>
-                </template>
             </v-data-table>
         </v-col>
     </v-row>
 </template>
 
 <script>
+import {mapState} from 'vuex'
+
 export default {
     name: "PaymentTypes",
     data: () => ({
+        valid: true,
         dialog: false,
         loading: false,
         headers: [
@@ -90,9 +94,9 @@ export default {
                 value: 'name',
             },
             {text: 'Description', value: 'description'},
-            {text: 'Actions', value: 'actions', sortable: false},
+            {text: '', value: 'actions', sortable: false},
         ],
-        paymentTypes: [],
+        // paymentTypes: [],
         editedIndex: -1,
         editedItem: {
             name: '',
@@ -108,6 +112,9 @@ export default {
         formTitle() {
             return this.editedIndex === -1 ? 'New Payment Type' : 'Edit Payment Type'
         },
+        ...mapState([
+            'paymentTypes'
+        ])
     },
 
     watch: {
@@ -116,20 +123,7 @@ export default {
         },
     },
 
-    created() {
-        this.initialize()
-    },
-
     methods: {
-        initialize() {
-            this.loading = true
-            this.$finance.getPaymentTypes().then((paymentTypes) => {
-                this.paymentTypes = paymentTypes
-            }).finally(() => {
-                this.loading = false
-            })
-        },
-
         editItem(item) {
             this.editedIndex = this.paymentTypes.indexOf(item)
             this.editedItem = Object.assign({}, item)
@@ -148,13 +142,11 @@ export default {
                 this.editedIndex = -1
             })
         },
-
         save() {
-            if (this.editedIndex > -1) {
-                Object.assign(this.paymentTypes[this.editedIndex], this.editedItem)
-            } else {
-                this.paymentTypes.push(this.editedItem)
+            if (!this.$refs.form.validate()) {
+                return false
             }
+            this.$store.dispatch('modifyPaymentType', this.editedItem, this.editedIndex)
             this.close()
         },
     },

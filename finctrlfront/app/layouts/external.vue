@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import SnackbarNotification from '@/components/SnackbarNotification'
+import SnackbarNotification from '@/components/notifications/SnackbarNotification'
 
 export default {
     name: 'BareLayout',

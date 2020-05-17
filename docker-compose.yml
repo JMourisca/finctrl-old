@@ -33,7 +33,7 @@ services:
             context: ./finctrlfront
             target: dev
             dockerfile: Dockerfile
-        command: tail -f /dev/null # yarn dev
+        command: yarn dev # tail -f /dev/null # yarn dev
         volumes:
             - ./finctrlfront:/code
         ports:

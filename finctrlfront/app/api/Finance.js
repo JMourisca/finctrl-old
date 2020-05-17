@@ -26,6 +26,14 @@ export default axios => ({
             return Promise.reject(error.response.data)
         })
     },
+    getOptions() {
+        return axios.get('api/options').then((response) => {
+            axios.defaults.headers.common['x-csrftoken'] = Cookies.get('csrftoken')
+            return response.data
+        }).catch((error) => {
+            return Promise.reject(error.response.data)
+        })
+    },
     getOnlinePayments(currency) {
         const p = new URLSearchParams();
         p.append("currency", currency)
@@ -33,6 +41,30 @@ export default axios => ({
         return axios.get('api/online-payments', {
             params: params,
         }).then((response) => {
+            axios.defaults.headers.common['x-csrftoken'] = Cookies.get('csrftoken')
+            return response.data
+        }).catch((error) => {
+            return Promise.reject(error.response.data)
+        })
+    },
+    postOnlinePayments(payload) {
+        return axios.post("api/online-payments", payload).then((response) => {
+            axios.defaults.headers.common['x-csrftoken'] = Cookies.get('csrftoken')
+            return response.data
+        }).catch((error) => {
+            return Promise.reject(error.response.data)
+        })
+    },
+    putOnlinePayments(payload) {
+        return axios.put("api/online-payments/" + payload.id, payload).then((response) => {
+            axios.defaults.headers.common['x-csrftoken'] = Cookies.get('csrftoken')
+            return response.data
+        }).catch((error) => {
+            return Promise.reject(error.response.data)
+        })
+    },
+    deleteOnlinePayment(id) {
+        return axios.delete("api/online-payments/" + id).then((response) => {
             axios.defaults.headers.common['x-csrftoken'] = Cookies.get('csrftoken')
             return response.data
         }).catch((error) => {

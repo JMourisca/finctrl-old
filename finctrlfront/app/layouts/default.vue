@@ -53,10 +53,7 @@ export default {
         payload: {},
     }),
     mounted() {
-        this.$user.getUser().then((data) => {
-            this.$store.commit('setUser', data)
-            this.loadingUser = false
-        })
+        this.getAllData()
     },
     methods: {
         logout() {
@@ -66,6 +63,18 @@ export default {
             }).catch(() => {
             })
         },
+        getAllData() {
+            this.$user.getUser().then((data) => {
+                this.$store.commit('setUser', data)
+                this.loadingUser = false
+            })
+            this.$finance.getOptions().then((data) => {
+                this.$store.commit('setOptions', data)
+            })
+            this.$finance.getPaymentTypes().then((data) => {
+                this.$store.commit('setPaymentTypes', data)
+            })
+        }
     }
 }
 </script>

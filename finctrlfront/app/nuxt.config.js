@@ -32,6 +32,7 @@ export default {
         '~plugins/axios',
         '~plugins/loadingicon',
         '~plugins/fontawesome',
+        '~plugins/vuelidate',
     ],
     /*
     ** Nuxt.js dev-modules
@@ -44,6 +45,16 @@ export default {
     */
     modules: [
         '@nuxtjs/axios',
+        ['v-currency-field/nuxt', {
+            locale: 'de-CH',
+            decimalLength: 2,
+            autoDecimalMode: true,
+            min: null,
+            max: null,
+            defaultValue: 0,
+            valueAsInteger: false,
+            allowNegative: true,
+        }],
     ],
     /*
     ** vuetify module configuration
